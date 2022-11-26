@@ -13,10 +13,13 @@ body {
     border-style: outset;
 }
 
+#usage{
+    margin: 10px;
+    font-size: 10px;
+}
+
 #regex_text {
-    position: relative;
-    top: 10px;
-    left: 10px;
+    margin: 10px;
     width: 270px;
     height: 100px;
     min-width: 270px;
@@ -26,14 +29,14 @@ body {
 
 #error{
     margin: 10px;
+    color: red;
 }
 
-#usage{
+#about{
     position: fixed;
     margin: 10px;
     width: 270px;
     bottom: 10px;
-    font-size: 10px;
 }
 
 #render {
