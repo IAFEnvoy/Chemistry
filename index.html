@@ -5,12 +5,17 @@
     <script src="js/Pranule.js"></script>
     <script src="js/chemistry.js"></script>
     <script src="js/index.js"></script>
+    <link rel="stylesheet" href="scrollbar.css">
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
     <noscript>You need to enable JavaScript to run this page.</noscript>
     <script>Pranule(['', '100', "0.0.160", "0,255,255", '0', '6000', '20000', '0', '2', '2', '', '0'])</script>
-    <textarea id="regex_text" onkeyup="changePaint()"></textarea>
-    <div id="error" style="color:red;"> </div>
+    <div id="control" class="control_panel">
+        <textarea id="regex_text" onkeyup="changePaint()"></textarea>
+        <div id="error" style="color:red;"> </div>
+    </div>
     <div id="render"></div>
+    <div id="example" class="example_panel"></div>
 </body>

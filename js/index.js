@@ -1,9 +1,12 @@
+window.onload = async () => {
+}
+
 const changePaint = () => {
     let regex = document.getElementById("regex_text").value;
     document.getElementById('error').innerText = '\n';
     try {
         parse(regex);
-        draw();
+        document.getElementById('render').innerHTML = draw();
     } catch (err) {
         document.getElementById('error').innerText = err;
     }

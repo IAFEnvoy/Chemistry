@@ -86,7 +86,7 @@ const draw = () => {
     for (let { x, y, atom } of atomList)
         svg += addMiddleText(x - xMin, y - yMin, atom == '*' ? ' ' : atom);
     svg += '</svg>';
-    document.getElementById('render').innerHTML = svg;
+    return svg;
 }
 
 const addMiddleText = (x, y, text) => `<text x="${x}" y="${y + 2}">${text}</text>`;

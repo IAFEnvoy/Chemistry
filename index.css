@@ -1,0 +1,48 @@
+body {
+    background-color: #F4EDE3;
+}
+
+#control {
+    position: fixed;
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: 300px;
+    background: transparent;
+    border-color: black;
+    border-style: outset;
+}
+
+#regex_text {
+    position: relative;
+    top: 10px;
+    left: 10px;
+    width: 270px;
+    min-width: 270px;
+    max-width: 270px;
+    max-height: 400px;
+}
+
+#error{
+    margin: 10px;
+}
+
+#render {
+    position: fixed;
+    top: 10px;
+    left: 320px;
+    width: calc(100% - 640px);
+    height: calc(100% - 20px);
+    overflow: scroll;
+}
+
+#example {
+    position: fixed;
+    top: 10px;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    background: transparent;
+    border-color: black;
+    border-style: outset;
+}
