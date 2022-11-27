@@ -3,7 +3,6 @@
 <head>
     <title>键线式生成器</title>
     <script src="js/Pranule.js"></script>
-    <script src="js/chemistry.js"></script>
     <script src="js/index.js"></script>
     <link rel="stylesheet" href="scrollbar.css">
     <link rel="stylesheet" href="index.css">
@@ -13,15 +12,27 @@
     <noscript>You need to enable JavaScript to run this page.</noscript>
     <script>Pranule(['', '100', "0.0.160", "0,255,255", '0', '6000', '20000', '0', '2', '2', '', '0'])</script>
     <div id="control" class="control_panel">
-        <div id="usage"></div>
+        <div id="usage">使用说明：<br>
+            - | \ / 化学键，放于原子团前面或者后面<br>
+            [] 在原子团后面表示取代基，多个取代基使用,分隔<br>
+            = # 写在最前面表示双键和三键<br>
+            <> 对于后面相邻的键，旋转15°
+        </div>
         <textarea id="regex_text" onkeyup="changePaint()"></textarea>
         <div id="error"></div>
+        <input id="name_text"></input>
+        <button id="save_button" onclick="save()">保存</button>
         <div id="about">
             <img src="https://github.com/favicon.ico" style="width:18px;height:18px">
-            Github : 
+            Github :
             <a href="https://github.com/IAFEnvoy/Chemistry">IAFEnvoy/Chemistry</a>
         </div>
     </div>
     <div id="render"></div>
-    <div id="example" class="example_panel"></div>
+    <div class="saves_panel">
+        <div class="texts">示例</div>
+        <div id="examples" class="save_list"></div>
+        <div class="texts">本地存档</div>
+        <div id="local_saves" class="save_list"></div>
+    </div>
 </body>

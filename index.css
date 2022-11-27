@@ -4,6 +4,7 @@ body {
 
 #control {
     position: fixed;
+    border-radius: 20px;
     top: 10px;
     bottom: 10px;
     left: 10px;
@@ -13,26 +14,31 @@ body {
     border-style: outset;
 }
 
-#usage{
+#usage {
     margin: 10px;
     font-size: 10px;
 }
 
 #regex_text {
     margin: 10px;
-    width: 270px;
+    width: 268px;
     height: 100px;
-    min-width: 270px;
-    max-width: 270px;
+    min-width: 268px;
+    max-width: 268px;
     max-height: 400px;
 }
 
-#error{
+#name_text{
+    margin: 10px;
+    width: 200px;
+}
+
+#error {
     margin: 10px;
     color: red;
 }
 
-#about{
+#about {
     position: fixed;
     margin: 10px;
     width: 270px;
@@ -48,8 +54,27 @@ body {
     overflow: scroll;
 }
 
-#example {
+#save_button{
+    margin: 10px;
+    float: right;
+    background-color: #DDD;
+    top:20px;
+    width: 52px;
+    height: 20px;
+    font-size: 10px;
+    border-color: #BBB;
+    border-style: solid;
+    transition: all 0.2s ease-out;
+}
+
+#save_button:hover{
+    background-color: #BBB;
+    border-color: #999;
+}
+
+.saves_panel {
     position: fixed;
+    border-radius: 20px;
     top: 10px;
     bottom: 10px;
     right: 10px;
@@ -57,4 +82,69 @@ body {
     background: transparent;
     border-color: black;
     border-style: outset;
+}
+
+textarea {
+    background-color: white;
+    border-radius: 10px;
+    border-color: black;
+    border-style: inset;
+    padding: 5px 5px;
+}
+
+.save_list {
+    background-color: white;
+    border-radius: 10px;
+    border-color: #BBB;
+    border-style: solid;
+    margin-left: 5px;
+    margin-top: 5px;
+    width: 285px;
+    height: calc(50% - 40px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    user-select: none;
+}
+
+.save_obj{
+    background-color: white;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    border-color: #BBB;
+    border-style:solid;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+.save_obj:hover{
+    background-color: #DDD;
+    border-color: black;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.texts {
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+.del{
+    float: right;
+    background-color: #DDD;
+    top:5px;
+    right: 5px;
+    width: 40px;
+    height: 20px;
+    font-size: 10px;
+    border-radius: 10px;
+    border-color: #BBB;
+    border-style: solid;
+    transition: all 0.2s ease-out;
+}
+
+.del:hover{
+    background-color: #BBB;
+    border-color: #999;
 }
