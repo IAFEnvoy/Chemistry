@@ -143,7 +143,12 @@ const addBone = (x, y, angle, c) => {
 let examples = [], saves = [];
 
 const loadSaves = () => {
-    examples.push({ id: 0, name: '测试', regex: 'C[=-C]' });
+    examples.push({ "id": 0, "name": "甲烷", "regex": "C[|-H|-]" });
+    examples.push({ "id": 1, "name": "乙烯", "regex": "C[=-C[/\\H],H/\\]" });
+    examples.push({ "id": 2, "name": "乙炔", "regex": "C[#-C[-H],H-]" });
+    examples.push({ "id": 3, "name": "苯", "regex": "C[H-,=>\\C[H</,-C[>\\H,=</C[-H]]],</C[H>\\,=-C[</H,>\\*]]]" });
+    examples.push({ "id": 4, "name": "萘", "regex": "C[H-,=>\\C[C[=>\\C[-*,H</],H-]</,-C[>\\C[-H,=C[>\\H]</],=</C[-H]]],</C[H>\\,=-C[</H,>\\*]]]" })
+
     saves = window.localStorage.getItem('saves');
     saves = saves == null ? [] : saves.split('!').reduce((p, c) => {
         if (c != '') p.push(JSON.parse(c));
