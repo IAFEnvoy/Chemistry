@@ -198,3 +198,34 @@ const load = (type, id) => {
     parse(document.getElementById("regex_text").value);
     document.getElementById('render').innerHTML = draw();
 }
+
+const save2Img = () => {
+    let xMin = Math.min(atomList.reduce((p, c) => p < c.x ? p : c.x, Number.MAX_VALUE), boneList.reduce((p, c) => p < c.x ? p : c.x, Number.MAX_VALUE)) - margin;
+    let xMax = Math.min(atomList.reduce((p, c) => p > c.x ? p : c.x, Number.MIN_VALUE), boneList.reduce((p, c) => p > c.x ? p : c.x, Number.MIN_VALUE)) + margin;
+    let yMin = Math.min(atomList.reduce((p, c) => p < c.y ? p : c.y, Number.MAX_VALUE), boneList.reduce((p, c) => p < c.y ? p : c.y, Number.MAX_VALUE)) - margin;
+    let yMax = Math.min(atomList.reduce((p, c) => p > c.y ? p : c.y, Number.MIN_VALUE), boneList.reduce((p, c) => p > c.y ? p : c.y, Number.MIN_VALUE)) + margin;
+    let canvas = new Canvas(document.createElement('canvas'), xMax - xMin, yMax - yMin);
+
+    for (let { x, y, angle, count } of boneList)
+        addBoneToCanvas(canvas, x - xMin, y - yMin, angle, count);
+    for (let { x, y, atom } of atomList)
+        canvas.drawMiddleString(atom == '*' ? ' ' : atom, makePoint(x - xMin, y - yMin), '#000', document.getElementById('usage').style.font);
+    document.getElementById('render').appendChild(canvas.canvas);
+}
+
+const addBoneToCanvas = (canvas, x, y, angle, c) => {
+    let xMul = round(Math.cos(angle / 180 * Math.PI), 10), yMul = round(Math.sin(angle / 180 * Math.PI), 10)
+    let offsetX = (boneLength - textOffsetX) * xMul, offsetY = (boneLength - textOffsetY) * yMul;
+    let o_2_x = 2 * yMul, o_2_y = 2 * -xMul;
+    let o_3_x = 4 * yMul, o_3_y = 4 * -xMul;
+    if (c == 1)
+        canvas.drawLine(makePoint(x - offsetX, y - offsetY), makePoint(x + offsetX, y + offsetY), '#000', 2);
+    if (c == 2) {
+        canvas.drawLine(makePoint(x - offsetX + o_2_x, y - offsetY + o_2_y), makePoint(x + offsetX + o_2_x, y + offsetY + o_2_y), '#000', 2);
+        canvas.drawLine(makePoint(x - offsetX - o_2_x, y - offsetY - o_2_y), makePoint(x + offsetX - o_2_x, y + offsetY - o_2_y), '#000', 2);
+    } if (c == 3) {
+        canvas.drawLine(makePoint(x - offsetX, y - offsetY), makePoint(x + offsetX, y + offsetY), '#000', 2);
+        canvas.drawLine(makePoint(x - offsetX + o_3_x, y - offsetY + o_3_y), makePoint(x + offsetX + o_3_x, y + offsetY + o_3_y), '#000', 2);
+        canvas.drawLine(makePoint(x - offsetX - o_3_x, y - offsetY - o_3_y), makePoint(x + offsetX - o_3_x, y + offsetY - o_3_y), '#000', 2);
+    }
+}

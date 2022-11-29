@@ -3,6 +3,7 @@
 <head>
     <title>键线式生成器</title>
     <script src="js/Pranule.js"></script>
+    <script src="js/canvas.js"></script>
     <script src="js/index.js"></script>
     <link rel="stylesheet" href="scrollbar.css">
     <link rel="stylesheet" href="index.css">
@@ -17,14 +18,14 @@
             [] 在原子团后面表示取代基，多个取代基使用,分隔<br>
             = # 写在最前面表示双键和三键<br>
             <> 对于后面相邻的键，旋转15°<br>
-            如果只需要渲染键可使用*来代替原子团（不会渲染）
+                如果只需要渲染键可使用*来代替原子团（不会渲染）
         </div>
         <textarea id="regex_text" onkeyup="changePaint()"></textarea>
         <div id="error"></div>
         <input id="name_text"></input>
         <button id="save_button" onclick="save()">保存</button>
         <div id="about">
-            Idea from 
+            Idea from
             <a href="https://icelava.top/cuiping.js/">cuiping.js</a>
             by
             <a href="https://github.com/ForkKILLET/">ForkKILLET</a><br>
