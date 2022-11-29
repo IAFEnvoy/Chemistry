@@ -56,6 +56,7 @@ body {
 
 #save_button{
     margin: 10px;
+    border-radius: 3px;
     float: right;
     background-color: #DDD;
     top:20px;
@@ -68,6 +69,24 @@ body {
 }
 
 #save_button:hover{
+    background-color: #BBB;
+    border-color: #999;
+}
+
+#download_button{
+    margin: 10px;
+    border-radius: 3px;
+    background-color: #DDD;
+    top:20px;
+    width: 110px;
+    height: 40px;
+    font-size: 10px;
+    border-color: #BBB;
+    border-style: solid;
+    transition: all 0.2s ease-out;
+}
+
+#download_button:hover{
     background-color: #BBB;
     border-color: #999;
 }

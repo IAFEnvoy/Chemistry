@@ -181,6 +181,7 @@ const deleteSave = (id) => {
 }
 
 const save = () => {
+    if (document.getElementById('regex_text').value == '') return;
     saves.push({ id: saves.length, name: document.getElementById('name_text').value, regex: document.getElementById("regex_text").value });
     window.localStorage.setItem('saves', saves.reduce((p, c) => p + '!' + JSON.stringify(c), ''));
     loadCustom();
@@ -199,7 +200,19 @@ const load = (type, id) => {
     document.getElementById('render').innerHTML = draw();
 }
 
+const save2Svg = () => {
+    if (document.getElementById('regex_text').value == '') return;
+    let blob = new Blob([document.getElementById('render').innerHTML], { type: 'text/plain;charset=utf-8' });
+    let save_link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+    let urlObject = window.URL || window.webkitURL || window;
+    save_link.href = urlObject.createObjectURL(blob);
+    let name = document.getElementById('name_text').value;
+    save_link.download = `${name == '' ? document.getElementById('regex_text').value : name}.svg`;
+    save_link.click();
+}
+
 const save2Img = () => {
+    if (document.getElementById('regex_text').value == '') return;
     let xMin = Math.min(atomList.reduce((p, c) => p < c.x ? p : c.x, Number.MAX_VALUE), boneList.reduce((p, c) => p < c.x ? p : c.x, Number.MAX_VALUE)) - margin;
     let xMax = Math.min(atomList.reduce((p, c) => p > c.x ? p : c.x, Number.MIN_VALUE), boneList.reduce((p, c) => p > c.x ? p : c.x, Number.MIN_VALUE)) + margin;
     let yMin = Math.min(atomList.reduce((p, c) => p < c.y ? p : c.y, Number.MAX_VALUE), boneList.reduce((p, c) => p < c.y ? p : c.y, Number.MAX_VALUE)) - margin;
@@ -207,25 +220,16 @@ const save2Img = () => {
     let canvas = new Canvas(document.createElement('canvas'), xMax - xMin, yMax - yMin);
 
     for (let { x, y, angle, count } of boneList)
-        addBoneToCanvas(canvas, x - xMin, y - yMin, angle, count);
+        addBoneToCanvas(canvas, x - xMin, y - yMin - 20, angle, count);
     for (let { x, y, atom } of atomList)
-        canvas.drawMiddleString(atom == '*' ? ' ' : atom, makePoint(x - xMin, y - yMin), '#000', document.getElementById('usage').style.font);
-    document.getElementById('render').appendChild(canvas.canvas);
-}
+        canvas.drawMiddleString(atom == '*' ? ' ' : atom, makePoint(x - xMin, y - yMin), '#000');
 
-const addBoneToCanvas = (canvas, x, y, angle, c) => {
-    let xMul = round(Math.cos(angle / 180 * Math.PI), 10), yMul = round(Math.sin(angle / 180 * Math.PI), 10)
-    let offsetX = (boneLength - textOffsetX) * xMul, offsetY = (boneLength - textOffsetY) * yMul;
-    let o_2_x = 2 * yMul, o_2_y = 2 * -xMul;
-    let o_3_x = 4 * yMul, o_3_y = 4 * -xMul;
-    if (c == 1)
-        canvas.drawLine(makePoint(x - offsetX, y - offsetY), makePoint(x + offsetX, y + offsetY), '#000', 2);
-    if (c == 2) {
-        canvas.drawLine(makePoint(x - offsetX + o_2_x, y - offsetY + o_2_y), makePoint(x + offsetX + o_2_x, y + offsetY + o_2_y), '#000', 2);
-        canvas.drawLine(makePoint(x - offsetX - o_2_x, y - offsetY - o_2_y), makePoint(x + offsetX - o_2_x, y + offsetY - o_2_y), '#000', 2);
-    } if (c == 3) {
-        canvas.drawLine(makePoint(x - offsetX, y - offsetY), makePoint(x + offsetX, y + offsetY), '#000', 2);
-        canvas.drawLine(makePoint(x - offsetX + o_3_x, y - offsetY + o_3_y), makePoint(x + offsetX + o_3_x, y + offsetY + o_3_y), '#000', 2);
-        canvas.drawLine(makePoint(x - offsetX - o_3_x, y - offsetY - o_3_y), makePoint(x + offsetX - o_3_x, y + offsetY - o_3_y), '#000', 2);
-    }
+    let a = document.createElement('a');
+    let name = document.getElementById('name_text').value;
+    a.download = `${name == '' ? document.getElementById('regex_text').value : name}.png`;
+    a.href = canvas.canvas.toDataURL("image/png");
+    a.dataset.downloadurl = [a.download, a.href].join(':');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }

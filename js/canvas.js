@@ -1,7 +1,10 @@
 class Canvas {
     constructor(canvas, width, height) {
         this.canvas = canvas;
+        this.canvas.width = width;
+        this.canvas.height = height;
         this.ctx = canvas.getContext('2d');
+        this.ctx.font = '25px Arial';
     }
     clear = () => this.canvas.height = this.canvas.height;
     drawLine = (start, end, color, width) => this.drawLines(new Array(start, end), color, width);
@@ -20,21 +23,18 @@ class Canvas {
         this.ctx.fillStyle = color;
         this.ctx.fill();
     }
-    drawString = (text, point, color, font) => {
+    drawMiddleString = (text, point, color) => {
+        let size = this.getTextSize(text);
+        point = makePoint(point.X - size.X / 2, point.Y - size.Y / 2);
+        this.drawString(text, point, color);
+    }
+    drawString = (text, point, color) => {
         this.ctx.fillStyle = color;
-        this.ctx.font = font;
         this.ctx.fillText(text, point.X, point.Y);
     }
-    drawMiddleString = (text, point, color, font) => {
-        let size = this.getTextSize(text, font);
-        point = addPoint(point, makePoint(-size.X / 2, -size.Y / 2))
-        this.ctx.fillStyle = color;
-        this.ctx.font = font;
-        this.ctx.fillText(text, point.X, point.Y);
-    }
-    getTextSize = (text, font) => {
+    getTextSize = (text) => {
         let span = document.createElement("span");
-        span.style.font = font;
+        span.style.fontSize = '20px';
         span.innerText = text;
         document.body.appendChild(span);
         let size = makePoint(span.offsetWidth, span.offsetHeight);
@@ -44,3 +44,20 @@ class Canvas {
 }
 const addPoint = (p1, p2) => makePoint(p1.X + p2.X, p1.Y + p2.Y);
 const makePoint = (X, Y) => ({ X, Y });
+
+const addBoneToCanvas = (canvas, x, y, angle, c) => {
+    let xMul = round(Math.cos(angle / 180 * Math.PI), 10), yMul = round(Math.sin(angle / 180 * Math.PI), 10)
+    let offsetX = (boneLength - textOffsetX) * xMul, offsetY = (boneLength - textOffsetY) * yMul;
+    let o_2_x = 2 * yMul, o_2_y = 2 * -xMul;
+    let o_3_x = 4 * yMul, o_3_y = 4 * -xMul;
+    if (c == 1)
+        canvas.drawLine(makePoint(x - offsetX, y - offsetY), makePoint(x + offsetX, y + offsetY), '#000', 2);
+    if (c == 2) {
+        canvas.drawLine(makePoint(x - offsetX + o_2_x, y - offsetY + o_2_y), makePoint(x + offsetX + o_2_x, y + offsetY + o_2_y), '#000', 2);
+        canvas.drawLine(makePoint(x - offsetX - o_2_x, y - offsetY - o_2_y), makePoint(x + offsetX - o_2_x, y + offsetY - o_2_y), '#000', 2);
+    } if (c == 3) {
+        canvas.drawLine(makePoint(x - offsetX, y - offsetY), makePoint(x + offsetX, y + offsetY), '#000', 2);
+        canvas.drawLine(makePoint(x - offsetX + o_3_x, y - offsetY + o_3_y), makePoint(x + offsetX + o_3_x, y + offsetY + o_3_y), '#000', 2);
+        canvas.drawLine(makePoint(x - offsetX - o_3_x, y - offsetY - o_3_y), makePoint(x + offsetX - o_3_x, y + offsetY - o_3_y), '#000', 2);
+    }
+}

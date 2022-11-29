@@ -3,6 +3,7 @@
 <head>
     <title>键线式生成器</title>
     <script src="js/Pranule.js"></script>
+    <script src="js/StreamSaver.min.js"></script>
     <script src="js/canvas.js"></script>
     <script src="js/index.js"></script>
     <link rel="stylesheet" href="scrollbar.css">
@@ -24,6 +25,8 @@
         <div id="error"></div>
         <input id="name_text"></input>
         <button id="save_button" onclick="save()">保存</button>
+        <button id="download_button" onclick="save2Img()">转存为PNG图片</button>
+        <button id="download_button" onclick="save2Svg()">转存为SVG图片</button>
         <div id="about">
             Idea from
             <a href="https://icelava.top/cuiping.js/">cuiping.js</a>
