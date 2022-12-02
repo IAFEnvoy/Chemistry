@@ -34,6 +34,7 @@ let atomList = [], boneList = [];
 const boneLength = 30, textOffsetX = 12.5, textOffsetY = 12.5, margin = 50;
 const dirKey = '-|/\\', rotateKey = '<>', angle = { '-': 0, '\\': 45, '|': 90, '/': -45, '>': 15, '<': -15 };
 const mulKey = '=#', multibone = { '=': 2, '#': 3 };
+const c_atom = 'C*';
 
 const parse = (regex) => {
     atomList = [];
@@ -46,30 +47,30 @@ const parseOne = (regex, centerX, centerY) => {
     if (regex.indexOf('[') != -1) {
         if (regex.slice(-1) != ']') throw Error('Can\'t find end of array');
         let sub = regex.slice(regex.indexOf('[') + 1, regex.length - 1);
-        subAtom(sub, centerX, centerY);
         atom = regex.slice(0, regex.indexOf('['));
+        subAtom(sub, centerX, centerY, c_atom.indexOf(atom) != -1);
     }
     atomList.push({ atom: atom, x: centerX, y: centerY });
 }
 
-const subAtom = (regex, centerX, centerY) => {
+const subAtom = (regex, centerX, centerY, is_c) => {
     let subs = [], sub = '', stack = 0;
-    for (let i = 0; i < regex.length; i++) {
-        if (regex[i] == ',' && stack == 0) {
+    for (let char of regex) {
+        if (char == ',' && stack == 0) {
             subs.push(sub);
             sub = '';
         } else {
-            sub += regex[i];
-            if (regex[i] == '[') stack++;
-            if (regex[i] == ']') stack--;
+            sub += char;
+            if (char == '[') stack++;
+            if (char == ']') stack--;
         }
     }
     subs.push(sub);
-    for (let i = 0; i < subs.length; i++)
-        parseSingle(subs[i], centerX, centerY);
+    for (let sub of subs)
+        parseSingle(sub, centerX, centerY, is_c);
 }
 
-const parseSingle = (regex, centerX, centerY) => {
+const parseSingle = (regex, centerX, centerY, is_c) => {
     if (regex == '') throw Error('Unexpected empty atom group');
     let dir = [], mirrorFlag = 1, atom = '', count = 1, inAtom = false, stack = 0, rotate = 0;
     for (let i = 0; i < regex.length; i++) {
@@ -80,10 +81,10 @@ const parseSingle = (regex, centerX, centerY) => {
             if (rotate != 0) throw Error('Too many rotate key');
             rotate = angle[regex[i]];
         } else if (dirKey.indexOf(regex[i]) != -1 && stack == 0) {
-            let a = (angle[regex[i]] + rotate) % 360;
+            let a = angle[regex[i]] + rotate;
             if (dir.find(x => x.mirror == mirrorFlag && x.angle == a) != null)
                 throw Error('Too many bones');
-            dir.push({ mirror: mirrorFlag, angle: a });
+            dir.push(mirrorFlag == -1 ? a + 180 : a);
             rotate = 0;
         } else {
             if (mirrorFlag == -1 && stack == 0) throw Error('Too many sub atom group');
@@ -100,9 +101,9 @@ const parseSingle = (regex, centerX, centerY) => {
     if (rotate != 0) throw Error('Too many rotate key');
     if (atom == '') throw Error('Missing atom group');
     if (dir.length == 0) throw Error('Missing bones');
-    for (let { mirror, angle } of dir) {
-        let offsetX = boneLength * round(Math.cos(angle / 180 * Math.PI), 10) * mirror, offsetY = boneLength * round(Math.sin(angle / 180 * Math.PI), 10) * mirror;
-        boneList.push({ angle: angle, count: count, x: centerX + offsetX, y: centerY + offsetY });
+    for (let angle of dir) {
+        let offsetX = boneLength * round(Math.cos(angle / 180 * Math.PI), 10), offsetY = boneLength * round(Math.sin(angle / 180 * Math.PI), 10);
+        boneList.push({ angle: angle, count: count, x: centerX + offsetX, y: centerY + offsetY, c: { start: is_c, end: c_atom.indexOf(atom.split('[')[0]) != -1 } });
         parseOne(atom, centerX + offsetX * 2, centerY + offsetY * 2);
     }
 }
@@ -112,32 +113,38 @@ const draw = () => {
     let xMax = Math.min(atomList.reduce((p, c) => p > c.x ? p : c.x, Number.MIN_VALUE), boneList.reduce((p, c) => p > c.x ? p : c.x, Number.MIN_VALUE)) + margin;
     let yMin = Math.min(atomList.reduce((p, c) => p < c.y ? p : c.y, Number.MAX_VALUE), boneList.reduce((p, c) => p < c.y ? p : c.y, Number.MAX_VALUE)) - margin;
     let yMax = Math.min(atomList.reduce((p, c) => p > c.y ? p : c.y, Number.MIN_VALUE), boneList.reduce((p, c) => p > c.y ? p : c.y, Number.MIN_VALUE)) + margin;
+    let hide_c = document.getElementById("hide_c").checked;
+
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${xMax - xMin}" height="${yMax - yMin}">`;
     svg += '<style>text{text-anchor:middle;dominant-baseline:middle;font-size:25px}</style>';
-    for (let { x, y, angle, count } of boneList)
-        svg += addBone(x - xMin, y - yMin, angle, count);
+    if (!document.getElementById('hide_bone').checked)
+        for (let { x, y, angle, count, c } of boneList)
+            svg += addBone(x - xMin, y - yMin, angle, count, c.start && hide_c, c.end && hide_c);
     for (let { x, y, atom } of atomList)
-        svg += addMiddleText(x - xMin, y - yMin, atom == '*' ? ' ' : atom);
+        if (c_atom.indexOf(atom) == -1 || !hide_c)
+            svg += addMiddleText(x - xMin, y - yMin, atom == '*' ? ' ' : atom);
     svg += '</svg>';
     return svg;
 }
 
 const addMiddleText = (x, y, text) => `<text x="${x}" y="${y + 2}">${text}</text>`;
 
-const addBone = (x, y, angle, c) => {
-    let xMul = round(Math.cos(angle / 180 * Math.PI), 10), yMul = round(Math.sin(angle / 180 * Math.PI), 10)
-    let offsetX = (boneLength - textOffsetX) * xMul, offsetY = (boneLength - textOffsetY) * yMul;
+const addBone = (x, y, angle, count, c_start, c_end) => {
+    let xMul = round(Math.cos(angle / 180 * Math.PI), 10), yMul = round(Math.sin(angle / 180 * Math.PI), 10);
+    let offsetX1 = (boneLength - (c_start ? 0 : textOffsetX)) * xMul, offsetY1 = (boneLength - (c_start ? 0 : textOffsetY)) * yMul;
+    let offsetX2 = (boneLength - (c_end ? 0 : textOffsetX)) * xMul, offsetY2 = (boneLength - (c_end ? 0 : textOffsetY)) * yMul;
     let o_2_x = 2 * yMul, o_2_y = 2 * -xMul;
     let o_3_x = 4 * yMul, o_3_y = 4 * -xMul;
-    if (c == 1)
-        return `<line x1="${x - offsetX}" y1="${y - offsetY}" x2="${x + offsetX}" y2="${y + offsetY}" stroke="black" stroke-width="2"></line>`;
-    if (c == 2)
-        return `<line x1="${x - offsetX + o_2_x}" y1="${y - offsetY + o_2_y}" x2="${x + offsetX + o_2_x}" y2="${y + offsetY + o_2_y}" stroke="black" stroke-width="2"></line>`
-            + `<line x1="${x - offsetX - o_2_x}" y1="${y - offsetY - o_2_y}" x2="${x + offsetX - o_2_x}" y2="${y + offsetY - o_2_y}" stroke="black" stroke-width="2"></line>`;
-    if (c == 3)
-        return `<line x1="${x - offsetX}" y1="${y - offsetY}" x2="${x + offsetX}" y2="${y + offsetY}" stroke="black" stroke-width="2"></line>`
-            + `<line x1="${x - offsetX + o_3_x}" y1="${y - offsetY + o_3_y}" x2="${x + offsetX + o_3_x}" y2="${y + offsetY + o_3_y}" stroke="black" stroke-width="2"></line>`
-            + `<line x1="${x - offsetX - o_3_x}" y1="${y - offsetY - o_3_y}" x2="${x + offsetX - o_3_x}" y2="${y + offsetY - o_3_y}" stroke="black" stroke-width="2"></line>`;
+    console.log(x, y, angle, xMul, yMul);
+    if (count == 1)
+        return `<line x1="${x - offsetX1}" y1="${y - offsetY1}" x2="${x + offsetX2}" y2="${y + offsetY2}" stroke="black" stroke-width="2"></line>`;
+    if (count == 2)
+        return `<line x1="${x - offsetX1 + o_2_x}" y1="${y - offsetY1 + o_2_y}" x2="${x + offsetX2 + o_2_x}" y2="${y + offsetY2 + o_2_y}" stroke="black" stroke-width="2"></line>`
+            + `<line x1="${x - offsetX1 - o_2_x}" y1="${y - offsetY1 - o_2_y}" x2="${x + offsetX2 - o_2_x}" y2="${y + offsetY2 - o_2_y}" stroke="black" stroke-width="2"></line>`;
+    if (count == 3)
+        return `<line x1="${x - offsetX1}" y1="${y - offsetY1}" x2="${x + offsetX2}" y2="${y + offsetY2}" stroke="black" stroke-width="2"></line>`
+            + `<line x1="${x - offsetX1 + o_3_x}" y1="${y - offsetY1 + o_3_y}" x2="${x + offsetX2 + o_3_x}" y2="${y + offsetY2 + o_3_y}" stroke="black" stroke-width="2"></line>`
+            + `<line x1="${x - offsetX1 - o_3_x}" y1="${y - offsetY1 - o_3_y}" x2="${x + offsetX2 - o_3_x}" y2="${y + offsetY2 - o_3_y}" stroke="black" stroke-width="2"></line>`;
 }
 
 let examples = [], saves = [];
@@ -174,8 +181,8 @@ const loadCustom = () => {
 
 const deleteSave = (id) => {
     saves.splice(id, 1);
-    for (let i = 0; i < saves.length; i++)
-        saves[i].id = i;
+    for (let save of saves)
+        save.id = i;
     window.localStorage.setItem('saves', saves.reduce((p, c) => p + '!' + JSON.stringify(c), ''));
     loadCustom();
 }

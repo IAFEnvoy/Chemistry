@@ -167,3 +167,12 @@ textarea {
     background-color: #BBB;
     border-color: #999;
 }
+
+.setting_subtitle {
+    text-align: center;
+    font-size: 25px;
+    display: inline-block;
+    padding-left: 20px;
+    padding-right: 20px;
+    top:-10px
+}

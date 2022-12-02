@@ -7,6 +7,7 @@
     <script src="js/canvas.js"></script>
     <script src="js/index.js"></script>
     <link rel="stylesheet" href="scrollbar.css">
+    <link rel="stylesheet" href="switch.css">
     <link rel="stylesheet" href="index.css">
     <link rel="icon" type="image/png" href="favicon.ico" sizes="256x256">
 </head>
@@ -28,6 +29,20 @@
         <button id="save_button" onclick="save()">保存</button>
         <button id="download_button" onclick="save2Img()">转存为PNG图片</button>
         <button id="download_button" onclick="save2Svg()">转存为SVG图片</button>
+        <div>
+          <div class="setting_subtitle">隐藏键</div>
+          <label class="switch">
+            <input id="hide_bone" type="checkbox" onchange="document.getElementById('render').innerHTML = draw()">
+            <div class="slider round"></div>
+          </label>
+        </div><br>
+        <div>
+          <div class="setting_subtitle">省略碳原子</div>
+          <label class="switch">
+            <input id="hide_c" type="checkbox" onchange="document.getElementById('render').innerHTML = draw()">
+            <div class="slider round"></div>
+          </label>
+        </div><br>
         <div id="about">
             Idea from
             <a href="https://icelava.top/cuiping.js/">cuiping.js</a>
